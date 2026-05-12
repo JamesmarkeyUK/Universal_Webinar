@@ -1,10 +1,13 @@
-import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import {
   Camera,
+  Check,
+  Copy,
   Eye,
   EyeOff,
   Hand,
+  Loader2,
   Lock,
   MonitorUp,
   Power,
@@ -20,13 +23,113 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
+import {
+  countRegistrations,
+  getWebinarBySlug,
+  listRegistrations,
+  updateWebinar,
+} from '@/lib/db'
+import type { RegistrationRow, WebinarRow } from '@/lib/database.types'
 
 export function AdminControl() {
-  const { slug } = useParams()
-  const [live, setLive] = useState(false)
-  const [showGuestCount, setShowGuestCount] = useState(true)
-  const [allowSpeakRequests, setAllowSpeakRequests] = useState(false)
-  const [pinLocked, setPinLocked] = useState(false)
+  const { slug = '' } = useParams()
+  const [webinar, setWebinar] = useState<WebinarRow | null>(null)
+  const [registrations, setRegistrations] = useState<RegistrationRow[]>([])
+  const [registrationCount, setRegistrationCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [saving, setSaving] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    ;(async () => {
+      try {
+        const w = await getWebinarBySlug(slug)
+        if (!active) return
+        if (!w) {
+          setError(`No webinar found for slug "${slug}".`)
+          return
+        }
+        setWebinar(w)
+        const [count, regs] = await Promise.all([
+          countRegistrations(w.id),
+          listRegistrations(w.id),
+        ])
+        if (!active) return
+        setRegistrationCount(count)
+        setRegistrations(regs)
+      } catch (err) {
+        if (active) setError(err instanceof Error ? err.message : 'Load failed.')
+      } finally {
+        if (active) setLoading(false)
+      }
+    })()
+    return () => {
+      active = false
+    }
+  }, [slug])
+
+  async function patchWebinar(patch: Partial<WebinarRow>, label: string) {
+    if (!webinar) return
+    setSaving(label)
+    try {
+      const next = await updateWebinar(webinar.id, patch)
+      setWebinar(next)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Update failed.')
+    } finally {
+      setSaving(null)
+    }
+  }
+
+  async function toggleLive() {
+    if (!webinar) return
+    const goingLive = webinar.status !== 'live'
+    await patchWebinar(
+      {
+        status: goingLive ? 'live' : 'ended',
+        started_at:
+          goingLive && !webinar.started_at
+            ? new Date().toISOString()
+            : webinar.started_at,
+        ended_at: goingLive ? null : new Date().toISOString(),
+      },
+      'status',
+    )
+  }
+
+  async function copyShareLink() {
+    if (!webinar) return
+    const url = `${window.location.origin}/w/${webinar.slug}/register`
+    await navigator.clipboard.writeText(url)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-24 text-slate-400">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
+    )
+  }
+
+  if (error || !webinar) {
+    return (
+      <div className="container py-12">
+        <Card>
+          <CardContent className="p-6">
+            <p className="text-sm text-red-700">{error}</p>
+            <Button asChild className="mt-4" variant="outline">
+              <Link to="/admin">Back to dashboard</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   return (
     <div className="container py-8">
@@ -36,18 +139,46 @@ export function AdminControl() {
             Control room
           </p>
           <h1 className="text-2xl font-semibold text-slate-900">
-            Welcome to Universal Webinar{' '}
+            {webinar.title}{' '}
             <span className="text-slate-400">·</span>{' '}
-            <span className="text-slate-500 text-base">/{slug}</span>
+            <span className="text-slate-500 text-base font-mono">
+              /{webinar.slug}
+            </span>
           </h1>
+          {webinar.description && (
+            <p className="mt-1 max-w-2xl text-sm text-slate-500">
+              {webinar.description}
+            </p>
+          )}
         </div>
         <Button
           size="lg"
-          variant={live ? 'destructive' : 'default'}
-          onClick={() => setLive((v) => !v)}
+          variant={webinar.status === 'live' ? 'destructive' : 'default'}
+          onClick={toggleLive}
+          disabled={saving === 'status'}
         >
-          <Power className="h-4 w-4" />
-          {live ? 'End webinar' : 'Go live'}
+          {saving === 'status' ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Power className="h-4 w-4" />
+          )}
+          {webinar.status === 'live' ? 'End webinar' : 'Go live'}
+        </Button>
+      </div>
+
+      <div className="mb-6 flex flex-wrap gap-2">
+        <Button variant="outline" size="sm" onClick={copyShareLink}>
+          {copied ? (
+            <Check className="h-4 w-4" />
+          ) : (
+            <Copy className="h-4 w-4" />
+          )}
+          {copied ? 'Copied!' : 'Copy registration link'}
+        </Button>
+        <Button asChild variant="ghost" size="sm">
+          <Link to={`/w/${webinar.slug}/register`} target="_blank">
+            Open registration page ↗
+          </Link>
         </Button>
       </div>
 
@@ -69,11 +200,11 @@ export function AdminControl() {
                 </div>
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
-                <Button variant="outline">
+                <Button variant="outline" disabled>
                   <Camera className="h-4 w-4" />
                   Test camera
                 </Button>
-                <Button variant="outline">
+                <Button variant="outline" disabled>
                   <MonitorUp className="h-4 w-4" />
                   Share screen
                 </Button>
@@ -108,27 +239,43 @@ export function AdminControl() {
                 Room settings
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-1">
               <ToggleRow
-                icon={showGuestCount ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                icon={
+                  webinar.show_guest_count ? (
+                    <Eye className="h-4 w-4" />
+                  ) : (
+                    <EyeOff className="h-4 w-4" />
+                  )
+                }
                 label="Show attendee count"
                 hint="Guests see how many people are watching."
-                checked={showGuestCount}
-                onChange={setShowGuestCount}
+                checked={webinar.show_guest_count}
+                disabled={saving === 'show_guest_count'}
+                onChange={(next) =>
+                  patchWebinar({ show_guest_count: next }, 'show_guest_count')
+                }
               />
               <ToggleRow
                 icon={<Hand className="h-4 w-4" />}
                 label="Allow speaker requests"
                 hint="Guests can request to join the conversation."
-                checked={allowSpeakRequests}
-                onChange={setAllowSpeakRequests}
+                checked={webinar.allow_speak_requests}
+                disabled={saving === 'allow_speak_requests'}
+                onChange={(next) =>
+                  patchWebinar(
+                    { allow_speak_requests: next },
+                    'allow_speak_requests',
+                  )
+                }
               />
               <ToggleRow
                 icon={<Lock className="h-4 w-4" />}
                 label="PIN-lock the webinar"
-                hint="Guests must enter a PIN to join."
-                checked={pinLocked}
-                onChange={setPinLocked}
+                hint="Lands in Phase 6."
+                checked={false}
+                disabled
+                onChange={() => {}}
               />
             </CardContent>
           </Card>
@@ -137,13 +284,32 @@ export function AdminControl() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-slate-500" />
-                Attendees
+                Registrations
               </CardTitle>
+              <CardDescription>
+                {registrationCount} pre-registered
+                {registrations.length > 0 && registrations.length !== registrationCount
+                  ? ` (showing ${registrations.length})`
+                  : ''}
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-500">
-                The roster (name + email) shows here once guests join. Phase 3.
-              </p>
+              {registrations.length === 0 ? (
+                <p className="text-sm text-slate-500">
+                  No one has registered yet. Share the registration link above.
+                </p>
+              ) : (
+                <ul className="divide-y divide-slate-100 text-sm">
+                  {registrations.slice(0, 10).map((r) => (
+                    <li key={r.id} className="flex flex-col py-2">
+                      <span className="font-medium text-slate-900">
+                        {r.name}
+                      </span>
+                      <span className="text-xs text-slate-500">{r.email}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </CardContent>
           </Card>
         </aside>
@@ -157,19 +323,25 @@ function ToggleRow({
   label,
   hint,
   checked,
+  disabled,
   onChange,
 }: {
   icon: React.ReactNode
   label: string
   hint: string
   checked: boolean
+  disabled?: boolean
   onChange: (next: boolean) => void
 }) {
   return (
     <button
       type="button"
-      onClick={() => onChange(!checked)}
-      className="group flex w-full items-start justify-between gap-3 rounded-lg p-2.5 text-left transition hover:bg-slate-50"
+      onClick={() => !disabled && onChange(!checked)}
+      disabled={disabled}
+      className={cn(
+        'group flex w-full items-start justify-between gap-3 rounded-lg p-2.5 text-left transition',
+        disabled ? 'opacity-60' : 'hover:bg-slate-50',
+      )}
     >
       <div className="flex items-start gap-3">
         <span className="mt-0.5 text-slate-500">{icon}</span>

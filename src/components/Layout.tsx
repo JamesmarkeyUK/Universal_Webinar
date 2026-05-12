@@ -1,6 +1,8 @@
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { LogOut } from 'lucide-react'
 import { Logo } from './Logo'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/lib/auth'
 
 export function PublicLayout() {
   return (
@@ -16,10 +18,18 @@ export function PublicLayout() {
 
 export function AdminLayout() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const { user, signOut } = useAuth()
   const navItems = [
     { to: '/admin', label: 'Dashboard' },
     { to: '/admin/settings', label: 'Settings' },
   ]
+
+  async function handleSignOut() {
+    await signOut()
+    navigate('/admin/login', { replace: true })
+  }
+
   return (
     <div className="flex min-h-full flex-col bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
@@ -50,10 +60,21 @@ export function AdminLayout() {
               })}
             </nav>
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <span className="hidden sm:inline rounded-full bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700">
-              Admin
-            </span>
+          <div className="flex items-center gap-2 text-sm">
+            {user?.email && (
+              <span className="hidden sm:inline truncate max-w-[200px] text-slate-500">
+                {user.email}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+              title="Sign out"
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="sr-only sm:not-sr-only">Sign out</span>
+            </button>
           </div>
         </div>
       </header>

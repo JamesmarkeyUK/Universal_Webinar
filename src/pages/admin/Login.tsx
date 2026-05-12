@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { ShieldCheck } from 'lucide-react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Loader2, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,16 +12,35 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Logo } from '@/components/Logo'
+import { useAuth } from '@/lib/auth'
 
 export function AdminLogin() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { signIn, configured, user } = useAuth()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
+  const from = (location.state as { from?: string } | null)?.from ?? '/admin'
+
+  if (user) {
+    navigate(from, { replace: true })
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // Phase 1 stub: bypass auth straight to dashboard.
-    navigate('/admin')
+    setError(null)
+    setSubmitting(true)
+    const result = await signIn(email, password)
+    setSubmitting(false)
+    if (result.error) {
+      setError(result.error)
+      return
+    }
+    navigate(from, { replace: true })
   }
 
   return (
@@ -50,6 +69,14 @@ export function AdminLogin() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {!configured && (
+                  <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                    Supabase isn't connected. Set{' '}
+                    <code className="font-mono">VITE_SUPABASE_URL</code> and{' '}
+                    <code className="font-mono">VITE_SUPABASE_ANON_KEY</code>{' '}
+                    and reload.
+                  </div>
+                )}
                 <form className="space-y-4" onSubmit={handleSubmit}>
                   <div className="space-y-1.5">
                     <Label htmlFor="email">Email</Label>
@@ -61,6 +88,7 @@ export function AdminLogin() {
                       autoComplete="email"
                       placeholder="you@example.com"
                       required
+                      disabled={!configured || submitting}
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -73,14 +101,29 @@ export function AdminLogin() {
                       autoComplete="current-password"
                       placeholder="••••••••"
                       required
+                      disabled={!configured || submitting}
                     />
                   </div>
-                  <Button type="submit" size="lg" className="w-full">
-                    Sign in
+                  {error && (
+                    <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+                      {error}
+                    </p>
+                  )}
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full"
+                    disabled={!configured || submitting}
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Signing in…
+                      </>
+                    ) : (
+                      'Sign in'
+                    )}
                   </Button>
-                  <p className="text-center text-xs text-slate-500">
-                    Auth wires up in Phase 2 (Supabase).
-                  </p>
                 </form>
               </CardContent>
             </Card>

@@ -14,18 +14,20 @@ Built as an installable PWA. One admin hosts a single live webinar. Guests join 
 - **Video/audio:** LiveKit Cloud *(wires up in Phase 4)*
 - **Hosting:** Vercel free tier
 
-## Current status: Phase 1 — branded PWA shell
+## Current status: Phase 2 — Supabase, admin auth, webinar CRUD, pre-registration
 
-The app boots, the routes are wired, the brand is in place, and it can be installed to a phone home screen. Pages are interactive stubs — backends connect in later phases.
+The admin can sign in, create webinars, share a pre-registration link, and see registrations roll in. See [SUPABASE.md](SUPABASE.md) for one-time backend setup (~10 minutes, no card).
 
 | Route | Page |
 | --- | --- |
 | `/` | Landing |
-| `/w/:slug` | Guest join (name + email) |
-| `/w/:slug/live` | Guest live room (video + chat stubs) |
-| `/admin/login` | Admin sign-in |
-| `/admin` | Admin dashboard |
-| `/admin/w/:slug` | Admin control room |
+| `/w/:slug/register` | Pre-registration (name + email) |
+| `/w/:slug` | Guest join (name + email at the door) |
+| `/w/:slug/live` | Guest live room (video + chat — Phases 3–4) |
+| `/admin/login` | Admin sign-in (Supabase Auth) |
+| `/admin` | Admin dashboard — list + create webinars |
+| `/admin/w/:slug` | Admin control room (settings, registrations, live controls) |
+| `/admin/settings` | Admin account |
 
 ## Local development
 
@@ -33,6 +35,7 @@ Requires **Node 20+**.
 
 ```bash
 npm install
+cp .env.example .env.local   # fill in Supabase keys, see SUPABASE.md
 npm run dev
 ```
 
@@ -62,9 +65,9 @@ Static `dist/` output is portable — it can also be hosted on any static host (
 
 This is built in phases. Each phase ends with a verification checkpoint before the next begins.
 
-- **Phase 1** — Branded PWA shell *(current)*
-- **Phase 2** — Supabase + admin auth + create webinar
-- **Phase 3** — Join flow + realtime chat + reactions
+- **Phase 1** — Branded PWA shell ✅
+- **Phase 2** — Supabase + admin auth + webinar CRUD + pre-registration *(current)*
+- **Phase 3** — Guest join + realtime chat + reactions
 - **Phase 4** — LiveKit video (admin broadcasts)
 - **Phase 5** — Speaker requests + admin moderation
 - **Phase 6** — PIN lock + screen-share polish
@@ -79,25 +82,37 @@ src/
     ui/                shadcn primitives (Button, Input, Card, Dialog, Label)
     Layout.tsx         Public + admin layouts
     Logo.tsx           Brand mark
+    NewWebinarDialog.tsx
+    ProtectedRoute.tsx
   lib/
+    auth.tsx           Auth provider + useAuth hook (Supabase)
     brand.ts           Color tokens
+    database.types.ts  Typed table rows / inserts
+    db.ts              Webinar + registration data access
+    slug.ts            URL-safe slug generation
+    supabase.ts        Browser Supabase client
     utils.ts           cn() helper
   pages/
     Landing.tsx
-    Join.tsx
-    Live.tsx
+    Join.tsx            Join with name + email (at door)
+    Register.tsx        Pre-registration
+    Live.tsx            (stubbed — Phase 3)
     NotFound.tsx
     admin/
       Login.tsx
-      Dashboard.tsx
-      Control.tsx
-  index.css            Tailwind layers + base
-  App.tsx              Routes
-  main.tsx             Entry
+      Dashboard.tsx     Lists webinars + opens NewWebinarDialog
+      Control.tsx       Live controls, settings toggles, registrations list
+      Settings.tsx
+  index.css
+  App.tsx
+  main.tsx
+supabase/
+  migrations/
+    0001_init.sql       Tables, RLS, realtime publication
 public/
   favicon.svg
   apple-touch-icon.png
-  icons/               PWA icons (192, 512, maskable)
+  icons/                PWA icons (192, 512, maskable)
 ```
 
 ## License
