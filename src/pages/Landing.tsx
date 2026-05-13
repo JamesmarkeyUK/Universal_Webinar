@@ -8,6 +8,7 @@ import {
   Video,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { WebinarPreview } from '@/components/WebinarPreview'
 
 export function Landing() {
   return (
@@ -60,6 +61,10 @@ export function Landing() {
               100% Free · 100% Open Source
               <ArrowRight className="h-3 w-3 opacity-60" />
             </a>
+          </div>
+
+          <div className="mt-16 sm:mt-20">
+            <WebinarPreview />
           </div>
         </div>
       </section>
