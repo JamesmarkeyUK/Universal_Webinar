@@ -34,9 +34,8 @@ export function AdminLayout() {
   return (
     <div className="flex min-h-full flex-col bg-slate-50">
       <header className="relative overflow-hidden border-b border-slate-200 bg-white">
-        <HeaderBrandMark />
-        <div className="container relative z-10 flex h-16 items-center justify-between">
-          <div className="flex items-center gap-8">
+        <div className="container flex h-16 items-center justify-between">
+          <div className="relative z-10 flex items-center gap-8">
             <Link to="/admin" className="flex items-center">
               <Logo />
             </Link>
@@ -62,16 +61,17 @@ export function AdminLayout() {
               })}
             </nav>
           </div>
-          <div className="flex items-center gap-2 text-sm">
+          <div className="relative flex items-center gap-2 text-sm">
+            <HeaderBrandMark />
             {user?.email && (
-              <span className="hidden sm:inline truncate max-w-[200px] text-slate-500">
+              <span className="relative z-10 hidden sm:inline truncate max-w-[200px] text-slate-500">
                 {user.email}
               </span>
             )}
             <button
               type="button"
               onClick={handleSignOut}
-              className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+              className="relative z-10 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
               title="Sign out"
             >
               <LogOut className="h-4 w-4" />
@@ -90,15 +90,15 @@ export function AdminLayout() {
 function TopBar() {
   return (
     <header className="relative overflow-hidden border-b border-slate-200 bg-white/70 backdrop-blur">
-      <HeaderBrandMark />
-      <div className="container relative z-10 flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center">
+      <div className="container flex h-16 items-center justify-between">
+        <Link to="/" className="relative z-10 flex items-center">
           <Logo />
         </Link>
-        <nav className="flex items-center gap-2 text-sm">
+        <nav className="relative flex items-center gap-2 text-sm">
+          <HeaderBrandMark />
           <Link
             to="/admin/login"
-            className="rounded-md px-3 py-1.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            className="relative z-10 rounded-md px-3 py-1.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
           >
             Admin
           </Link>
