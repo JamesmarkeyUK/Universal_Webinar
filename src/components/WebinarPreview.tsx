@@ -36,7 +36,7 @@ export function WebinarPreview() {
           }
           @keyframes preview-host-zoom {
             0%, 25%   { transform: scale(1); }
-            45%, 65%  { transform: scale(1.18); }
+            45%, 65%  { transform: scale(1.35); }
             85%, 100% { transform: scale(1); }
           }
           @media (prefers-reduced-motion: reduce) {
