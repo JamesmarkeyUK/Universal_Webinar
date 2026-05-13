@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { HeaderBrandMark } from '@/components/HeaderBrandMark'
 import { Logo } from '@/components/Logo'
 import { useAuth } from '@/lib/auth'
 
@@ -45,8 +46,9 @@ export function AdminLogin() {
 
   return (
     <div className="flex min-h-full flex-col bg-slate-50">
-      <header className="border-b border-slate-200 bg-white/70">
-        <div className="container flex h-16 items-center">
+      <header className="relative overflow-hidden border-b border-slate-200 bg-white/70">
+        <HeaderBrandMark />
+        <div className="container relative z-10 flex h-16 items-center">
           <Link to="/" className="flex items-center">
             <Logo />
           </Link>

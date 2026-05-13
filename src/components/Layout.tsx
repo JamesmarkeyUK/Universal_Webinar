@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { LogOut } from 'lucide-react'
+import { HeaderBrandMark } from './HeaderBrandMark'
 import { Logo } from './Logo'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
@@ -32,8 +33,9 @@ export function AdminLayout() {
 
   return (
     <div className="flex min-h-full flex-col bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="container flex h-16 items-center justify-between">
+      <header className="relative overflow-hidden border-b border-slate-200 bg-white">
+        <HeaderBrandMark />
+        <div className="container relative z-10 flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link to="/admin" className="flex items-center">
               <Logo />
@@ -87,8 +89,9 @@ export function AdminLayout() {
 
 function TopBar() {
   return (
-    <header className="border-b border-slate-200 bg-white/70 backdrop-blur">
-      <div className="container flex h-16 items-center justify-between">
+    <header className="relative overflow-hidden border-b border-slate-200 bg-white/70 backdrop-blur">
+      <HeaderBrandMark />
+      <div className="container relative z-10 flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center">
           <Logo />
         </Link>
