@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Calendar, Loader2, Plus, Radio } from 'lucide-react'
+import { Calendar, Check, Copy, Loader2, Plus, Radio } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -88,6 +88,15 @@ export function AdminDashboard() {
 
 function WebinarCard({ webinar }: { webinar: WebinarRow }) {
   const when = formatSchedule(webinar)
+  const [copied, setCopied] = useState(false)
+
+  async function copyShareLink() {
+    const url = `${window.location.origin}/w/${webinar.slug}/register`
+    await navigator.clipboard.writeText(url)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -114,8 +123,13 @@ function WebinarCard({ webinar }: { webinar: WebinarRow }) {
       <CardContent className="flex items-center justify-between">
         <p className="text-xs text-slate-500 font-mono">/{webinar.slug}</p>
         <div className="flex gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link to={`/w/${webinar.slug}/register`}>Share</Link>
+          <Button variant="outline" size="sm" onClick={copyShareLink}>
+            {copied ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
+            {copied ? 'Copied!' : 'Share'}
           </Button>
           <Button asChild size="sm">
             <Link to={`/admin/w/${webinar.slug}`}>
