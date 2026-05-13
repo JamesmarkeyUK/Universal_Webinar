@@ -1,5 +1,12 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, MessageCircle, Mic, Sparkles, Video } from 'lucide-react'
+import {
+  ArrowRight,
+  Github,
+  MessageCircle,
+  Mic,
+  Sparkles,
+  Video,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export function Landing() {
@@ -43,6 +50,16 @@ export function Landing() {
             <p className="mt-4 text-xs text-slate-500">
               Have an invite link? Open it on any device — no signup needed.
             </p>
+            <a
+              href="https://github.com/JamesmarkeyUK/Universal_Webinar"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-medium text-slate-700 shadow-soft transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
+            >
+              <Github className="h-3.5 w-3.5" />
+              100% Free · 100% Open Source
+              <ArrowRight className="h-3 w-3 opacity-60" />
+            </a>
           </div>
         </div>
       </section>
