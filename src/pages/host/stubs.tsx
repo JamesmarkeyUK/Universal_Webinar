@@ -1,5 +1,12 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Mail, Palette, Sparkles, TrendingUp } from 'lucide-react'
+import {
+  ArrowLeft,
+  Mail,
+  Palette,
+  Sparkles,
+  TrendingUp,
+  Video,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -51,6 +58,24 @@ function StubPage({ icon, title, description, bullets, cta }: StubProps) {
         </Card>
       </div>
     </div>
+  )
+}
+
+export function HostWebinars() {
+  return (
+    <StubPage
+      icon={<Video className="h-5 w-5" />}
+      title="My webinars"
+      description="Every room you've hosted, in one place — pick up where you left off or revisit a recording."
+      bullets={[
+        'Live and scheduled rooms with one-click manage',
+        'Archive of ended webinars with attendance counts',
+        'Recording playback (Pro) with shareable replay links',
+        'Filter by status, search by title, sort by date',
+        'Quick-duplicate a webinar to reuse its settings',
+      ]}
+      cta="lands in Phase 3.6 (after OTP host identity is wired)"
+    />
   )
 }
 

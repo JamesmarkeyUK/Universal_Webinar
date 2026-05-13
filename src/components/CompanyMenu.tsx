@@ -8,10 +8,17 @@ import {
   Palette,
   Sparkles,
   TrendingUp,
+  Video,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const ITEMS = [
+  {
+    to: '/host/webinars',
+    label: 'My webinars',
+    icon: Video,
+    description: 'Active rooms, past sessions, and recordings.',
+  },
   {
     to: '/host/upgrade',
     label: 'Upgrade to Pro',

@@ -16,6 +16,7 @@ import {
   HostEmails,
   HostStatistics,
   HostUpgrade,
+  HostWebinars,
 } from '@/pages/host/stubs'
 import { NotFound } from '@/pages/NotFound'
 
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/w/:slug/live" element={<Live />} />
         <Route path="/host/new" element={<HostNew />} />
         <Route path="/host/w/:slug" element={<HostManage />} />
+        <Route path="/host/webinars" element={<HostWebinars />} />
         <Route path="/host/upgrade" element={<HostUpgrade />} />
         <Route path="/host/branding" element={<HostBranding />} />
         <Route path="/host/statistics" element={<HostStatistics />} />
