@@ -62,7 +62,7 @@ export function AdminLayout() {
             </nav>
           </div>
           <div className="relative flex items-center gap-2 text-sm">
-            <HeaderBrandMark />
+            <HeaderBrandMark variant="compact" />
             {user?.email && (
               <span className="relative z-10 hidden sm:inline truncate max-w-[200px] text-slate-500">
                 {user.email}
@@ -95,7 +95,7 @@ function TopBar() {
           <Logo />
         </Link>
         <nav className="relative flex items-center gap-2 text-sm">
-          <HeaderBrandMark />
+          <HeaderBrandMark variant="compact" />
           <Link
             to="/admin/login"
             className="relative z-10 rounded-md px-3 py-1.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900"

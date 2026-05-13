@@ -20,51 +20,55 @@ export function Landing() {
           <div className="absolute top-20 right-[8%] h-64 w-64 rounded-full bg-amber-100/70 blur-3xl" />
         </div>
 
-        <div className="container py-20 sm:py-28">
-          <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/80 px-3 py-1 text-xs font-medium text-brand-700 shadow-soft backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5" />
-              Live, warm, in your pocket
-            </span>
-            <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-6xl">
-              Webinars that feel like a{' '}
-              <span className="bg-gradient-to-r from-brand-500 to-brand-700 bg-clip-text text-transparent">
-                real conversation
-              </span>
-              .
-            </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600 sm:text-xl">
-              Host a polished live session, let the audience react in real time,
-              and invite anyone up on stage with a single tap — no installs, no
-              friction.
-            </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <Link to="/admin/login">
-                  Host a webinar <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link to="/w/demo">Join the demo room</Link>
-              </Button>
+        <div className="container py-16 sm:py-20 lg:py-24">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            {/* Left column — animated preview */}
+            <div className="order-2 lg:order-1">
+              <WebinarPreview />
             </div>
-            <p className="mt-4 text-xs text-slate-500">
-              Have an invite link? Open it on any device — no signup needed.
-            </p>
-            <a
-              href="https://github.com/JamesmarkeyUK/Universal_Webinar"
-              target="_blank"
-              rel="noreferrer"
-              className="mt-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-medium text-slate-700 shadow-soft transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
-            >
-              <Github className="h-3.5 w-3.5" />
-              100% Free · 100% Open Source
-              <ArrowRight className="h-3 w-3 opacity-60" />
-            </a>
-          </div>
 
-          <div className="mt-16 sm:mt-20">
-            <WebinarPreview />
+            {/* Right column — copy, CTAs, OSS pill */}
+            <div className="order-1 text-center lg:order-2 lg:text-left">
+              <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/80 px-3 py-1 text-xs font-medium text-brand-700 shadow-soft backdrop-blur">
+                <Sparkles className="h-3.5 w-3.5" />
+                Live, warm, in your pocket
+              </span>
+              <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-5xl xl:text-6xl">
+                Webinars that feel like a{' '}
+                <span className="bg-gradient-to-r from-brand-500 to-brand-700 bg-clip-text text-transparent">
+                  real conversation
+                </span>
+                .
+              </h1>
+              <p className="mt-6 max-w-xl text-lg text-slate-600 sm:text-xl lg:mx-0 mx-auto">
+                Host a polished live session, let the audience react in real
+                time, and invite anyone up on stage with a single tap — no
+                installs, no friction.
+              </p>
+              <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
+                <Button asChild size="lg">
+                  <Link to="/admin/login">
+                    Host a webinar <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg">
+                  <Link to="/w/demo">Join the demo room</Link>
+                </Button>
+              </div>
+              <p className="mt-4 text-xs text-slate-500">
+                Have an invite link? Open it on any device — no signup needed.
+              </p>
+              <a
+                href="https://github.com/JamesmarkeyUK/Universal_Webinar"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-medium text-slate-700 shadow-soft transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
+              >
+                <Github className="h-3.5 w-3.5" />
+                100% Free · 100% Open Source
+                <ArrowRight className="h-3 w-3 opacity-60" />
+              </a>
+            </div>
           </div>
         </div>
       </section>
