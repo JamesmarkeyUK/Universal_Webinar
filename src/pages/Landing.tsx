@@ -47,7 +47,7 @@ export function Landing() {
               </p>
               <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
                 <Button asChild size="lg">
-                  <Link to="/admin/login">
+                  <Link to="/host/new">
                     Host a webinar <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
@@ -56,7 +56,7 @@ export function Landing() {
                 </Button>
               </div>
               <p className="mt-4 text-xs text-slate-500">
-                Have an invite link? Open it on any device — no signup needed.
+                No signup required — verify your email when you go live.
               </p>
               <a
                 href="https://github.com/JamesmarkeyUK/Universal_Webinar"

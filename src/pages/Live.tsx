@@ -2,9 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Hand, Heart, Loader2, Users, Video } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  ChatPanel,
-} from '@/components/ChatPanel'
+import { ChatPanel } from '@/components/ChatPanel'
 import {
   FloatingReactions,
   type FloatingReactionsHandle,
@@ -187,13 +185,24 @@ export function Live() {
   return (
     <div className="container py-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-semibold text-slate-900">
-            {webinar.title}
-          </h1>
-          <p className="text-sm text-slate-500">
-            Welcome{attendee ? `, ${attendee.name.split(' ')[0]}` : ''} — enjoy the show.
-          </p>
+        <div className="flex items-center gap-3">
+          {webinar.logo_url && (
+            <img
+              src={webinar.logo_url}
+              alt={webinar.company_name ?? ''}
+              className="h-10 w-10 rounded-lg border border-slate-200 bg-white object-contain p-1"
+            />
+          )}
+          <div>
+            <h1 className="text-lg font-semibold text-slate-900">
+              {webinar.title}
+            </h1>
+            <p className="text-sm text-slate-500">
+              {webinar.company_name ? `${webinar.company_name} · ` : ''}
+              Welcome{attendee ? `, ${attendee.name.split(' ')[0]}` : ''} —
+              enjoy the show.
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {webinar.show_guest_count && viewerCount > 0 && (

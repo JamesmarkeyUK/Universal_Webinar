@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { HostedBy } from '@/components/HostedBy'
 import { useAuth } from '@/lib/auth'
 import { getMyAttendee, getWebinarBySlug, joinAsAttendee } from '@/lib/db'
 import { getErrorMessage } from '@/lib/errors'
@@ -144,6 +145,7 @@ export function Join() {
   return (
     <div className="container py-12 sm:py-16">
       <div className="mx-auto max-w-md">
+        <HostedBy webinar={webinar} />
         <div className="mb-6 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">
             <ShieldCheck className="h-3.5 w-3.5" />

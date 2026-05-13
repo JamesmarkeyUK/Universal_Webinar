@@ -25,8 +25,9 @@ In **SQL Editor → New query**, paste each migration file in order and click **
 
 1. [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql) — creates the tables, base RLS, and the Realtime publication.
 2. [`supabase/migrations/0002_phase3_chat.sql`](supabase/migrations/0002_phase3_chat.sql) — adds the guest-chat RLS policies, identity helper functions, and the `author_name` trigger.
+3. [`supabase/migrations/0003_multihost.sql`](supabase/migrations/0003_multihost.sql) — pivots to multi-host SaaS: adds host-email / company / logo fields to webinars, the `manage_token`-based RPC for unverified hosts, the OTP-verification RPC, and the `logos` storage bucket. Pins `is_admin()` to `accounts@unisim.co.uk` so OTP-verified hosts don't inherit god-mode.
 
-Both migrations are idempotent and safe to re-run.
+All migrations are idempotent and safe to re-run.
 
 ---
 
@@ -54,6 +55,35 @@ Turn it on under **Authentication → Sign In / Providers**:
 2. Save.
 
 If you skip this, the Join page will fail with "Anonymous sign-ins are disabled".
+
+## 3b. Enable Email OTP (required from Phase 3.5)
+
+Hosts verify their email with a 6-digit code when they click **Go live** for the first time. This uses Supabase's built-in Email OTP.
+
+1. Still under **Authentication → Sign In / Providers**, open the **Email** block.
+2. Make sure **"Enable Email Provider"** is on.
+3. Find **"Confirm email"** / **"Email OTP expiration"** / **"OTP length"** — defaults are fine (6 digits, 1-hour expiry).
+4. *(Optional)* Turn **off** **"Enable email signups"** if you only want hosts who came through the OTP flow — Supabase still allows OTP sign-in for existing users when signups are off. With signups on, anyone with an email can become a host (which is the SaaS intent).
+
+## 3c. Wire Resend as the SMTP provider so OTP emails come from your domain
+
+By default Supabase sends auth emails from `noreply@mail.app.supabase.io`, throttled to a handful per hour. Connect Resend (you already have a UNI SIM account) so the codes arrive from `webinar@unisim.co.uk`.
+
+1. In Resend → **Domains** → confirm `unisim.co.uk` is verified (or use a sub-domain like `mail.unisim.co.uk`). Make sure the SPF / DKIM records are green.
+2. Generate an **API key** in Resend with **Sending Access** — copy the value (`re_xxx`).
+3. In Supabase → **Project Settings → Authentication → SMTP Settings** → enable **"Enable Custom SMTP"** and fill in:
+   - Sender email: `webinar@unisim.co.uk`
+   - Sender name: `Universal Webinar`
+   - Host: `smtp.resend.com`
+   - Port: `465` (SSL) or `587` (TLS)
+   - Username: `resend`
+   - Password: paste the Resend API key
+4. Save and click **Send test email** to your own inbox. You should receive a test mail from `webinar@unisim.co.uk`.
+5. *(Optional)* Customise the OTP template under **Authentication → Email Templates → "Magic Link"** — that's the one used for OTP. Replace the boilerplate with your own copy, keeping the `{{ .Token }}` placeholder for the 6-digit code.
+
+## 3d. Verify the logos storage bucket exists
+
+Migration 0003 already creates a public `logos` bucket. To double-check: **Storage** in the left nav → you should see a bucket named `logos` marked public. If it's not there, re-run migration 0003.
 
 ---
 

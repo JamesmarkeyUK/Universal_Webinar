@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { LogOut } from 'lucide-react'
+import { CompanyMenu } from './CompanyMenu'
 import { HeaderBrandMark } from './HeaderBrandMark'
 import { Logo } from './Logo'
 import { cn } from '@/lib/utils'
@@ -94,8 +95,11 @@ function TopBar() {
         <Link to="/" className="relative z-10 flex items-center">
           <Logo />
         </Link>
-        <nav className="relative flex items-center gap-2 text-sm">
+        <nav className="relative flex items-center gap-1 text-sm">
           <HeaderBrandMark variant="compact" />
+          <span className="relative z-10">
+            <CompanyMenu />
+          </span>
           <Link
             to="/admin/login"
             className="relative z-10 rounded-md px-3 py-1.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900"

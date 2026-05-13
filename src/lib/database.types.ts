@@ -20,6 +20,12 @@ export interface WebinarRow {
   created_at: string
   updated_at: string
   created_by: string | null
+  host_name: string | null
+  host_email: string | null
+  company_name: string | null
+  logo_url: string | null
+  host_verified: boolean
+  manage_token: string
 }
 
 export interface WebinarInsert {
@@ -31,6 +37,10 @@ export interface WebinarInsert {
   allow_speak_requests?: boolean
   show_guest_count?: boolean
   created_by?: string | null
+  host_name?: string | null
+  host_email?: string | null
+  company_name?: string | null
+  logo_url?: string | null
 }
 
 export interface WebinarUpdate {
@@ -44,6 +54,9 @@ export interface WebinarUpdate {
   allow_speak_requests?: boolean
   show_guest_count?: boolean
   recording_url?: string | null
+  host_name?: string | null
+  company_name?: string | null
+  logo_url?: string | null
 }
 
 export interface RegistrationRow {

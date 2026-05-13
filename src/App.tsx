@@ -9,6 +9,14 @@ import { AdminLogin } from '@/pages/admin/Login'
 import { AdminDashboard } from '@/pages/admin/Dashboard'
 import { AdminControl } from '@/pages/admin/Control'
 import { AdminSettings } from '@/pages/admin/Settings'
+import { HostNew } from '@/pages/host/New'
+import { HostManage } from '@/pages/host/Manage'
+import {
+  HostBranding,
+  HostEmails,
+  HostStatistics,
+  HostUpgrade,
+} from '@/pages/host/stubs'
 import { NotFound } from '@/pages/NotFound'
 
 export default function App() {
@@ -19,6 +27,12 @@ export default function App() {
         <Route path="/w/:slug" element={<Join />} />
         <Route path="/w/:slug/register" element={<Register />} />
         <Route path="/w/:slug/live" element={<Live />} />
+        <Route path="/host/new" element={<HostNew />} />
+        <Route path="/host/w/:slug" element={<HostManage />} />
+        <Route path="/host/upgrade" element={<HostUpgrade />} />
+        <Route path="/host/branding" element={<HostBranding />} />
+        <Route path="/host/statistics" element={<HostStatistics />} />
+        <Route path="/host/emails" element={<HostEmails />} />
       </Route>
 
       <Route path="/admin/login" element={<AdminLogin />} />
