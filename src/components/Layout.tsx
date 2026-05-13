@@ -110,10 +110,22 @@ function TopBar() {
 
 function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-white">
+    <footer className="relative overflow-hidden border-t border-slate-200 bg-white">
       <div className="container flex flex-col items-center justify-between gap-2 py-6 text-xs text-slate-500 sm:flex-row">
-        <p>&copy; {new Date().getFullYear()} Universal Webinar</p>
-        <p>Built for live conversations.</p>
+        <div className="relative">
+          <HeaderBrandMark />
+          <p className="relative z-10 whitespace-nowrap">
+            &copy; {new Date().getFullYear()} Universal Webinar
+          </p>
+        </div>
+        <a
+          href="https://www.unisim.co.uk"
+          target="_blank"
+          rel="noreferrer"
+          className="font-medium text-slate-600 underline-offset-2 transition-colors hover:text-brand-700 hover:underline"
+        >
+          Hosted by UNI SIM
+        </a>
       </div>
     </footer>
   )
