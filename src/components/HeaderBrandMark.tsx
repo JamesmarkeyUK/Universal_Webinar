@@ -13,7 +13,7 @@ export function HeaderBrandMark() {
         src="/unisim-mark.png"
         alt=""
         draggable={false}
-        className="h-14 w-14 -rotate-[8deg] select-none opacity-[0.14]"
+        className="h-28 w-28 rotate-[12deg] select-none opacity-[0.10]"
       />
     </div>
   )
