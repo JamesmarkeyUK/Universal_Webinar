@@ -28,6 +28,22 @@ export function WebinarPreview() {
           </clipPath>
         </defs>
 
+        <style>{`
+          .preview-host-zoom {
+            transform-box: fill-box;
+            transform-origin: 42% 25%;
+            animation: preview-host-zoom 8s ease-in-out infinite;
+          }
+          @keyframes preview-host-zoom {
+            0%, 25%   { transform: scale(1); }
+            45%, 65%  { transform: scale(1.18); }
+            85%, 100% { transform: scale(1); }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .preview-host-zoom { animation: none; }
+          }
+        `}</style>
+
         {/* Header strip */}
         <line x1="0" y1="56" x2="800" y2="56" stroke="#e2e8f0" />
         <text
@@ -82,63 +98,68 @@ export function WebinarPreview() {
 
         <g clipPath="url(#videoClip)">
           {/* Host figure — translate(274, 160) places the head around the
-              centre of the video panel and the body bottom flush with it. */}
+              centre of the video panel and the body bottom flush with it.
+              The inner group runs the webcam-zoom CSS animation, scaling
+              around the face (~42% / 25% of the figure's bounding box).
+              Anything scaled past the video panel is hidden by videoClip. */}
           <g transform="translate(274, 160)">
-            {/* Body */}
-            <path
-              d="M -85 240 Q -85 130 0 130 Q 85 130 85 240 Z"
-              fill="#e05504"
-            />
-            {/* Collar highlight */}
-            <path
-              d="M -45 145 Q 0 165 45 145 L 35 170 Q 0 185 -35 170 Z"
-              fill="#b53d04"
-              opacity="0.5"
-            />
-            {/* Neck */}
-            <rect x="-14" y="103" width="28" height="36" fill="#f5c089" />
-            {/* Head */}
-            <circle cx="0" cy="68" r="50" fill="#f5c089" />
-            {/* Hair */}
-            <path
-              d="M -50 56 Q -46 22 0 18 Q 46 22 50 56 Q 44 32 30 28 Q 0 22 -30 28 Q -44 32 -50 56 Z"
-              fill="#5d3a1f"
-            />
-            {/* Eyes */}
-            <circle cx="-16" cy="64" r="3" fill="#0f172a" />
-            <circle cx="16" cy="64" r="3" fill="#0f172a" />
-            {/* Smile */}
-            <path
-              d="M -14 86 Q 0 96 14 86"
-              stroke="#0f172a"
-              strokeWidth="2.5"
-              fill="none"
-              strokeLinecap="round"
-            />
-            {/* Left arm — static, hanging down */}
-            <path
-              d="M -72 143 L -86 215"
-              stroke="#f5c089"
-              strokeWidth="18"
-              strokeLinecap="round"
-            />
-
-            {/* Right arm — waving, rotates around the shoulder (72, 143) */}
-            <g>
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                values="-14 72 143; 26 72 143; -14 72 143"
-                dur="1.8s"
-                repeatCount="indefinite"
-              />
+            <g className="preview-host-zoom">
+              {/* Body */}
               <path
-                d="M 72 143 L 112 62"
+                d="M -85 240 Q -85 130 0 130 Q 85 130 85 240 Z"
+                fill="#e05504"
+              />
+              {/* Collar highlight */}
+              <path
+                d="M -45 145 Q 0 165 45 145 L 35 170 Q 0 185 -35 170 Z"
+                fill="#b53d04"
+                opacity="0.5"
+              />
+              {/* Neck */}
+              <rect x="-14" y="103" width="28" height="36" fill="#f5c089" />
+              {/* Head */}
+              <circle cx="0" cy="68" r="50" fill="#f5c089" />
+              {/* Hair */}
+              <path
+                d="M -50 56 Q -46 22 0 18 Q 46 22 50 56 Q 44 32 30 28 Q 0 22 -30 28 Q -44 32 -50 56 Z"
+                fill="#5d3a1f"
+              />
+              {/* Eyes */}
+              <circle cx="-16" cy="64" r="3" fill="#0f172a" />
+              <circle cx="16" cy="64" r="3" fill="#0f172a" />
+              {/* Smile */}
+              <path
+                d="M -14 86 Q 0 96 14 86"
+                stroke="#0f172a"
+                strokeWidth="2.5"
+                fill="none"
+                strokeLinecap="round"
+              />
+              {/* Left arm — static, hanging down */}
+              <path
+                d="M -72 143 L -86 215"
                 stroke="#f5c089"
                 strokeWidth="18"
                 strokeLinecap="round"
               />
-              <circle cx="112" cy="62" r="14" fill="#f5c089" />
+
+              {/* Right arm — waving, rotates around the shoulder (72, 143) */}
+              <g>
+                <animateTransform
+                  attributeName="transform"
+                  type="rotate"
+                  values="-14 72 143; 26 72 143; -14 72 143"
+                  dur="1.8s"
+                  repeatCount="indefinite"
+                />
+                <path
+                  d="M 72 143 L 112 62"
+                  stroke="#f5c089"
+                  strokeWidth="18"
+                  strokeLinecap="round"
+                />
+                <circle cx="112" cy="62" r="14" fill="#f5c089" />
+              </g>
             </g>
           </g>
 
