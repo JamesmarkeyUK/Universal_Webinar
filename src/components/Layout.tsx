@@ -33,7 +33,7 @@ export function AdminLayout() {
 
   return (
     <div className="flex min-h-full flex-col bg-slate-50">
-      <header className="relative overflow-hidden border-b border-slate-200 bg-white">
+      <header className="relative border-b border-slate-200 bg-white">
         <div className="container flex h-16 items-center justify-between">
           <div className="relative z-10 flex items-center gap-8">
             <Link to="/admin" className="flex items-center">
@@ -89,7 +89,7 @@ export function AdminLayout() {
 
 function TopBar() {
   return (
-    <header className="relative overflow-hidden border-b border-slate-200 bg-white/70 backdrop-blur">
+    <header className="relative border-b border-slate-200 bg-white/70 backdrop-blur">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="relative z-10 flex items-center">
           <Logo />

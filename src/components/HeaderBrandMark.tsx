@@ -1,6 +1,7 @@
 // Decorative UNISIM mark, centered inside its parent. Drop this into a
 // `relative` container (the nav cluster on the right of a header) and the mark
-// embosses behind whichever buttons live there.
+// embosses behind whichever buttons live there. Sized to sit inside a 64px
+// header without clipping.
 export function HeaderBrandMark() {
   return (
     <div
@@ -11,7 +12,7 @@ export function HeaderBrandMark() {
         src="/unisim-mark.png"
         alt=""
         draggable={false}
-        className="h-36 w-36 -rotate-[10deg] select-none opacity-[0.08] sm:h-40 sm:w-40"
+        className="h-12 w-12 -rotate-[10deg] select-none opacity-[0.12]"
       />
     </div>
   )
