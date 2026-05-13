@@ -47,15 +47,6 @@ const config: Config = {
         soft: '0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.06)',
         glow: '0 0 0 6px rgb(224 85 4 / 0.12)',
       },
-      keyframes: {
-        'float-up': {
-          '0%': { transform: 'translateY(0) scale(1)', opacity: '1' },
-          '100%': { transform: 'translateY(-180px) scale(1.3)', opacity: '0' },
-        },
-      },
-      animation: {
-        'float-up': 'float-up 2.4s ease-out forwards',
-      },
     },
   },
   plugins: [require('tailwindcss-animate')],

@@ -56,3 +56,26 @@
     background: linear-gradient(135deg, #ff7c33 0%, #e05504 55%, #b53d04 100%);
   }
 }
+
+/* Floating-reaction animation. Defined in plain CSS (rather than as a Tailwind
+ * keyframe) because FloatingReactions consumes it via an inline `animation:`
+ * style, and Tailwind only emits @keyframes that are referenced by an
+ * `animate-*` utility class. */
+@keyframes float-up {
+  0% {
+    transform: translateY(8px) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    transform: translateY(-12px) scale(1);
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(-180px) scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-240px) scale(1.35);
+    opacity: 0;
+  }
+}
