@@ -1,5 +1,7 @@
 # Universal Webinar
 
+> Open source — self-host free or PRO hosted by UNI SIM.
+
 A modern, mobile-friendly webinar platform — host live Q&A with chat, reactions, and on-demand speakers.
 
 Built as an installable PWA. One admin hosts a single live webinar. Guests join with a name and email, watch the stream, chat with emoji reactions and floating hearts, and can request to come on camera for live Q&A. The admin moderates everything: mute, kick, ban, delete messages, screen-share, lock the room with a PIN.
