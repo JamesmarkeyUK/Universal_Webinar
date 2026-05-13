@@ -29,6 +29,7 @@ import {
   listRegistrations,
   updateWebinar,
 } from '@/lib/db'
+import { getErrorMessage } from '@/lib/errors'
 import type { RegistrationRow, WebinarRow } from '@/lib/database.types'
 
 export function AdminControl() {
@@ -61,7 +62,7 @@ export function AdminControl() {
         setRegistrationCount(count)
         setRegistrations(regs)
       } catch (err) {
-        if (active) setError(err instanceof Error ? err.message : 'Load failed.')
+        if (active) setError(getErrorMessage(err, 'Load failed.'))
       } finally {
         if (active) setLoading(false)
       }
@@ -78,7 +79,7 @@ export function AdminControl() {
       const next = await updateWebinar(webinar.id, patch)
       setWebinar(next)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Update failed.')
+      setError(getErrorMessage(err, 'Update failed.'))
     } finally {
       setSaving(null)
     }

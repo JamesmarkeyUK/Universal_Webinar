@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/card'
 import { NewWebinarDialog } from '@/components/NewWebinarDialog'
 import { listWebinars } from '@/lib/db'
+import { getErrorMessage } from '@/lib/errors'
 import type { WebinarRow } from '@/lib/database.types'
 
 export function AdminDashboard() {
@@ -26,7 +27,7 @@ export function AdminDashboard() {
     try {
       setWebinars(await listWebinars())
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load webinars.')
+      setError(getErrorMessage(err, 'Failed to load webinars.'))
     } finally {
       setLoading(false)
     }

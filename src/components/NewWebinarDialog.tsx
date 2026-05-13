@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { createWebinar } from '@/lib/db'
+import { getErrorMessage } from '@/lib/errors'
 import { slugifyTitle } from '@/lib/slug'
 import { useAuth } from '@/lib/auth'
 import type { WebinarRow } from '@/lib/database.types'
@@ -60,7 +61,7 @@ export function NewWebinarDialog({ open, onOpenChange, onCreated }: Props) {
       reset()
       onCreated(created)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong.')
+      setError(getErrorMessage(err))
     } finally {
       setSubmitting(false)
     }

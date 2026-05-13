@@ -76,20 +76,22 @@ export async function listRegistrations(
   return (data ?? []) as RegistrationRow[]
 }
 
+// Anonymous guests have INSERT permission on registrations but no SELECT, so
+// we can't do INSERT ... RETURNING. Plain insert + treat "already registered"
+// (unique_violation, Postgres SQLSTATE 23505) as a successful no-op.
 export async function registerForWebinar(
   webinarId: string,
   name: string,
   email: string,
-): Promise<RegistrationRow> {
+): Promise<void> {
   const trimmedEmail = email.trim().toLowerCase()
-  const { data, error } = await supabase
-    .from('registrations')
-    .upsert(
-      { webinar_id: webinarId, name: name.trim(), email: trimmedEmail },
-      { onConflict: 'webinar_id,email' },
-    )
-    .select('*')
-    .single()
-  if (error) throw error
-  return data as RegistrationRow
+  const { error } = await supabase.from('registrations').insert({
+    webinar_id: webinarId,
+    name: name.trim(),
+    email: trimmedEmail,
+  })
+  if (error) {
+    if (error.code === '23505') return
+    throw error
+  }
 }

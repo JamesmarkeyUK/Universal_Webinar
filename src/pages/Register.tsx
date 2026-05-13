@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { getWebinarBySlug, registerForWebinar } from '@/lib/db'
+import { getErrorMessage } from '@/lib/errors'
 import type { WebinarRow } from '@/lib/database.types'
 
 export function Register() {
@@ -33,7 +34,7 @@ export function Register() {
         if (!active) return
         setWebinar(w)
       } catch (err) {
-        if (active) setError(err instanceof Error ? err.message : 'Load failed.')
+        if (active) setError(getErrorMessage(err, 'Load failed.'))
       } finally {
         if (active) setLoading(false)
       }
@@ -52,7 +53,7 @@ export function Register() {
       await registerForWebinar(webinar.id, name, email)
       setRegistered(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not register.')
+      setError(getErrorMessage(err, 'Could not register.'))
     } finally {
       setSubmitting(false)
     }
