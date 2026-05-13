@@ -15,6 +15,7 @@ interface AuthContextValue {
   loading: boolean
   configured: boolean
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
+  signInAnonymously: () => Promise<{ error: string | null }>
   signOut: () => Promise<void>
 }
 
@@ -57,6 +58,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email,
           password,
         })
+        return { error: error ? error.message : null }
+      },
+      async signInAnonymously() {
+        const { error } = await supabase.auth.signInAnonymously()
         return { error: error ? error.message : null }
       },
       async signOut() {

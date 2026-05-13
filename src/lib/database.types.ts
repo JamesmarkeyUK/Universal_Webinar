@@ -60,6 +60,55 @@ export interface RegistrationInsert {
   email: string
 }
 
+export type AttendeeRole = 'guest' | 'speaker' | 'banned'
+
+export interface AttendeeRow {
+  id: string
+  webinar_id: string
+  registration_id: string | null
+  name: string
+  email: string
+  role: AttendeeRole
+  muted_by_admin: boolean
+  livekit_identity: string | null
+  joined_at: string
+  left_at: string | null
+  auth_user_id: string | null
+}
+
+export interface AttendeeInsert {
+  webinar_id: string
+  name: string
+  email: string
+  auth_user_id: string
+  registration_id?: string | null
+}
+
+export interface MessageRow {
+  id: string
+  webinar_id: string
+  attendee_id: string | null
+  author_name: string | null
+  content: string
+  created_at: string
+  deleted_at: string | null
+  deleted_by_admin: boolean
+}
+
+export interface MessageInsert {
+  webinar_id: string
+  attendee_id: string
+  content: string
+}
+
+export interface ReactionRow {
+  id: string
+  message_id: string
+  attendee_id: string
+  emoji: string
+  created_at: string
+}
+
 export interface Database {
   public: {
     Tables: {

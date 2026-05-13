@@ -21,12 +21,12 @@ You'll create a Supabase project, run the migration SQL, create the admin user, 
 
 ## 2. Run the migration SQL
 
-1. In your new project, open the **SQL Editor** in the left nav.
-2. Click **New query**.
-3. Copy the entire contents of [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql) from this repo and paste it in.
-4. Click **Run**. You should see *"Success. No rows returned."*
+In **SQL Editor → New query**, paste each migration file in order and click **Run** for each. You should see *"Success. No rows returned."*
 
-This creates all tables (`webinars`, `registrations`, `attendees`, `messages`, `reactions`, `speak_requests`, `webinar_secrets`), Row-Level Security policies, and a Realtime publication for the tables Phase 3 will subscribe to.
+1. [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql) — creates the tables, base RLS, and the Realtime publication.
+2. [`supabase/migrations/0002_phase3_chat.sql`](supabase/migrations/0002_phase3_chat.sql) — adds the guest-chat RLS policies, identity helper functions, and the `author_name` trigger.
+
+Both migrations are idempotent and safe to re-run.
 
 ---
 
@@ -43,6 +43,17 @@ That's your admin login.
 > Email signup is the default Auth method. Anyone with the anon key can *attempt* to sign in, but only this user has a valid password.
 
 > **Optional but recommended**: under **Authentication → Providers → Email**, turn **off** "Enable email signups" so nobody else can create an account through the front-end.
+
+## 3a. Enable anonymous sign-in (required from Phase 3 onward)
+
+Guests don't sign up — they join with just a name and email, which becomes an attendee row tied to a Supabase **anonymous** user. RLS uses that anonymous user's `auth.uid()` to gate who can post chat messages and reactions.
+
+Turn it on under **Authentication → Sign In / Providers**:
+
+1. Find **"Allow anonymous sign-ins"** (sometimes nested under the Email provider, depending on your dashboard version) and toggle it **on**.
+2. Save.
+
+If you skip this, the Join page will fail with "Anonymous sign-ins are disabled".
 
 ---
 

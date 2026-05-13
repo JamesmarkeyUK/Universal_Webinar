@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   Camera,
@@ -9,6 +9,7 @@ import {
   Hand,
   Loader2,
   Lock,
+  MessageSquare,
   MonitorUp,
   Power,
   Settings2,
@@ -22,25 +23,42 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { ChatPanel } from '@/components/ChatPanel'
 import { cn } from '@/lib/utils'
 import {
   countRegistrations,
   getWebinarBySlug,
+  listMessages,
+  listReactionsForWebinar,
   listRegistrations,
+  softDeleteMessage,
   updateWebinar,
 } from '@/lib/db'
 import { getErrorMessage } from '@/lib/errors'
-import type { RegistrationRow, WebinarRow } from '@/lib/database.types'
+import {
+  joinWebinarChannel,
+  leaveChannel,
+} from '@/lib/realtime'
+import type {
+  MessageRow,
+  ReactionRow,
+  RegistrationRow,
+  WebinarRow,
+} from '@/lib/database.types'
 
 export function AdminControl() {
   const { slug = '' } = useParams()
   const [webinar, setWebinar] = useState<WebinarRow | null>(null)
   const [registrations, setRegistrations] = useState<RegistrationRow[]>([])
   const [registrationCount, setRegistrationCount] = useState(0)
+  const [messages, setMessages] = useState<MessageRow[]>([])
+  const [reactions, setReactions] = useState<ReactionRow[]>([])
+  const [viewerCount, setViewerCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const knownMessageIds = useRef<Set<string>>(new Set())
 
   useEffect(() => {
     let active = true
@@ -54,13 +72,18 @@ export function AdminControl() {
           return
         }
         setWebinar(w)
-        const [count, regs] = await Promise.all([
+        const [count, regs, msgs, rxns] = await Promise.all([
           countRegistrations(w.id),
           listRegistrations(w.id),
+          listMessages(w.id),
+          listReactionsForWebinar(w.id),
         ])
         if (!active) return
         setRegistrationCount(count)
         setRegistrations(regs)
+        setMessages(msgs)
+        setReactions(rxns)
+        knownMessageIds.current = new Set(msgs.map((m) => m.id))
       } catch (err) {
         if (active) setError(getErrorMessage(err, 'Load failed.'))
       } finally {
@@ -71,6 +94,39 @@ export function AdminControl() {
       active = false
     }
   }, [slug])
+
+  // Realtime: subscribe to messages, reactions, and presence for this webinar
+  useEffect(() => {
+    if (!webinar) return
+    const channel = joinWebinarChannel(webinar.id, null, {
+      onMessageInsert: (row) => {
+        if (knownMessageIds.current.has(row.id)) return
+        knownMessageIds.current.add(row.id)
+        setMessages((prev) => [...prev, row])
+      },
+      onMessageUpdate: (row) => {
+        setMessages((prev) => prev.map((m) => (m.id === row.id ? row : m)))
+      },
+      onReactionInsert: (row) =>
+        setReactions((prev) =>
+          prev.some((r) => r.id === row.id) ? prev : [...prev, row],
+        ),
+      onReactionDelete: (id) =>
+        setReactions((prev) => prev.filter((r) => r.id !== id)),
+      onPresence: setViewerCount,
+    })
+    return () => {
+      void leaveChannel(channel)
+    }
+  }, [webinar])
+
+  const handleDeleteMessage = useCallback(async (messageId: string) => {
+    try {
+      await softDeleteMessage(messageId)
+    } catch (err) {
+      setError(getErrorMessage(err, 'Could not delete message.'))
+    }
+  }, [])
 
   async function patchWebinar(patch: Partial<WebinarRow>, label: string) {
     if (!webinar) return
@@ -167,7 +223,7 @@ export function AdminControl() {
         </Button>
       </div>
 
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div className="mb-6 flex flex-wrap items-center gap-2">
         <Button variant="outline" size="sm" onClick={copyShareLink}>
           {copied ? (
             <Check className="h-4 w-4" />
@@ -181,6 +237,12 @@ export function AdminControl() {
             Open registration page ↗
           </Link>
         </Button>
+        {viewerCount > 0 && (
+          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-600 shadow-soft">
+            <Users className="h-3.5 w-3.5" />
+            {viewerCount} watching now
+          </span>
+        )}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
@@ -229,6 +291,29 @@ export function AdminControl() {
                 their hand. (Phase 5.)
               </p>
             </CardContent>
+          </Card>
+
+          <Card className="flex h-[480px] flex-col">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4 text-slate-500" />
+                Live chat
+              </CardTitle>
+              <CardDescription>
+                Hover any message to delete it. Posting from the host seat
+                arrives in Phase 4.
+              </CardDescription>
+            </CardHeader>
+            <div className="flex-1 min-h-0 border-t border-slate-100">
+              <ChatPanel
+                messages={messages}
+                reactions={reactions}
+                currentAttendeeId={null}
+                isAdmin
+                readOnly
+                onDeleteMessage={handleDeleteMessage}
+              />
+            </div>
           </Card>
         </div>
 

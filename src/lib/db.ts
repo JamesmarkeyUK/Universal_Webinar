@@ -1,5 +1,9 @@
 import { supabase } from './supabase'
 import type {
+  AttendeeInsert,
+  AttendeeRow,
+  MessageRow,
+  ReactionRow,
   RegistrationRow,
   WebinarInsert,
   WebinarRow,
@@ -94,4 +98,121 @@ export async function registerForWebinar(
     if (error.code === '23505') return
     throw error
   }
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Attendees
+// ──────────────────────────────────────────────────────────────────────────────
+
+export async function getMyAttendee(
+  webinarId: string,
+): Promise<AttendeeRow | null> {
+  const { data: userResult } = await supabase.auth.getUser()
+  const userId = userResult.user?.id
+  if (!userId) return null
+  const { data, error } = await supabase
+    .from('attendees')
+    .select('*')
+    .eq('webinar_id', webinarId)
+    .eq('auth_user_id', userId)
+    .maybeSingle()
+  if (error) throw error
+  return data as AttendeeRow | null
+}
+
+export async function joinAsAttendee(
+  insert: AttendeeInsert,
+): Promise<AttendeeRow> {
+  const { data, error } = await supabase
+    .from('attendees')
+    .insert(insert)
+    .select('*')
+    .single()
+  if (error) throw error
+  return data as AttendeeRow
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Chat
+// ──────────────────────────────────────────────────────────────────────────────
+
+export async function listMessages(webinarId: string): Promise<MessageRow[]> {
+  const { data, error } = await supabase
+    .from('messages')
+    .select('*')
+    .eq('webinar_id', webinarId)
+    .order('created_at', { ascending: true })
+    .limit(500)
+  if (error) throw error
+  return (data ?? []) as MessageRow[]
+}
+
+export async function sendMessage(
+  webinarId: string,
+  attendeeId: string,
+  content: string,
+): Promise<void> {
+  const trimmed = content.trim()
+  if (trimmed.length === 0) return
+  const { error } = await supabase.from('messages').insert({
+    webinar_id: webinarId,
+    attendee_id: attendeeId,
+    content: trimmed.slice(0, 1000),
+  })
+  if (error) throw error
+}
+
+export async function softDeleteMessage(messageId: string): Promise<void> {
+  const { error } = await supabase
+    .from('messages')
+    .update({
+      deleted_at: new Date().toISOString(),
+      deleted_by_admin: true,
+    })
+    .eq('id', messageId)
+  if (error) throw error
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Reactions
+// ──────────────────────────────────────────────────────────────────────────────
+
+export async function listReactionsForWebinar(
+  webinarId: string,
+): Promise<ReactionRow[]> {
+  // Reactions don't carry webinar_id; join through messages.
+  const { data, error } = await supabase
+    .from('reactions')
+    .select('*, messages!inner(webinar_id)')
+    .eq('messages.webinar_id', webinarId)
+  if (error) throw error
+  return ((data ?? []) as unknown as ReactionRow[])
+}
+
+export async function addReaction(
+  messageId: string,
+  attendeeId: string,
+  emoji: string,
+): Promise<void> {
+  const { error } = await supabase.from('reactions').insert({
+    message_id: messageId,
+    attendee_id: attendeeId,
+    emoji,
+  })
+  // 23505 = already reacted with this emoji; treat as no-op
+  if (error && error.code !== '23505') throw error
+}
+
+export async function removeReaction(
+  messageId: string,
+  attendeeId: string,
+  emoji: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from('reactions')
+    .delete()
+    .eq('message_id', messageId)
+    .eq('attendee_id', attendeeId)
+    .eq('emoji', emoji)
+  if (error) throw error
 }
