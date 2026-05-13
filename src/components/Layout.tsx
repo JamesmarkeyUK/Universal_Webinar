@@ -122,14 +122,17 @@ function Footer() {
             &copy; {new Date().getFullYear()} Universal Webinar
           </p>
         </div>
-        <a
-          href="https://www.unisim.co.uk"
-          target="_blank"
-          rel="noreferrer"
-          className="font-medium text-slate-600 underline-offset-2 transition-colors hover:text-brand-700 hover:underline"
-        >
-          Hosted by UNI SIM
-        </a>
+        <p className="font-medium text-slate-600">
+          Open source — self-host free or PRO hosted by{' '}
+          <a
+            href="https://www.unisim.co.uk"
+            target="_blank"
+            rel="noreferrer"
+            className="underline-offset-2 transition-colors hover:text-brand-700 hover:underline"
+          >
+            UNI SIM
+          </a>
+        </p>
       </div>
     </footer>
   )
