@@ -65,7 +65,7 @@ export function Landing() {
                 className="mt-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-medium text-slate-700 shadow-soft transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
               >
                 <Github className="h-3.5 w-3.5" />
-                100% Free · 100% Open Source
+                100% Free self-hosted · 100% Open Source
                 <ArrowRight className="h-3 w-3 opacity-60" />
               </a>
             </div>
