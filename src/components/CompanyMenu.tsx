@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import {
   Building2,
@@ -38,23 +39,70 @@ const ITEMS = [
   },
 ]
 
+// The dropdown panel is rendered into document.body via React Portal so that
+// the header's `overflow-hidden` (which we need to crop the embossed brand
+// watermark) can't also clip the menu. Position is computed from the
+// trigger button's bounding rect and refreshed on scroll / resize while open.
 export function CompanyMenu() {
   const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement | null>(null)
+  const [coords, setCoords] = useState<{ top: number; right: number } | null>(
+    null,
+  )
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
+
+  function updateCoords() {
+    if (!buttonRef.current) return
+    const rect = buttonRef.current.getBoundingClientRect()
+    setCoords({
+      top: rect.bottom + 8,
+      right: Math.max(8, window.innerWidth - rect.right),
+    })
+  }
+
+  function toggle() {
+    if (!open) updateCoords()
+    setOpen((v) => !v)
+  }
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false)
+      const target = e.target as Node
+      if (
+        !buttonRef.current?.contains(target) &&
+        !menuRef.current?.contains(target)
+      ) {
+        setOpen(false)
+      }
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
     }
     document.addEventListener('mousedown', onDocClick)
-    return () => document.removeEventListener('mousedown', onDocClick)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDocClick)
+      document.removeEventListener('keydown', onKey)
+    }
   }, [])
 
+  useEffect(() => {
+    if (!open) return
+    const handler = () => updateCoords()
+    window.addEventListener('scroll', handler, { passive: true })
+    window.addEventListener('resize', handler)
+    return () => {
+      window.removeEventListener('scroll', handler)
+      window.removeEventListener('resize', handler)
+    }
+  }, [open])
+
   return (
-    <div ref={ref} className="relative">
+    <>
       <button
+        ref={buttonRef}
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={toggle}
         aria-haspopup="menu"
         aria-expanded={open}
         className={cn(
@@ -73,44 +121,49 @@ export function CompanyMenu() {
           )}
         />
       </button>
-      {open && (
-        <div
-          role="menu"
-          className="absolute right-0 z-50 mt-2 w-72 rounded-xl border border-slate-200 bg-white p-2 shadow-lg"
-        >
-          {ITEMS.map((item) => {
-            const Icon = item.icon
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={() => setOpen(false)}
-                role="menuitem"
-                className="flex items-start gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-slate-50"
-              >
-                <span className="mt-0.5 grid h-7 w-7 place-items-center rounded-md bg-brand-50 text-brand-700">
-                  <Icon className="h-3.5 w-3.5" />
-                </span>
-                <span className="flex-1">
-                  <span className="flex items-center gap-2">
-                    <span className="font-medium text-slate-900">
-                      {item.label}
+      {open && coords
+        ? createPortal(
+            <div
+              ref={menuRef}
+              role="menu"
+              className="fixed z-[60] w-72 rounded-xl border border-slate-200 bg-white p-2 shadow-lg"
+              style={{ top: coords.top, right: coords.right }}
+            >
+              {ITEMS.map((item) => {
+                const Icon = item.icon
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setOpen(false)}
+                    role="menuitem"
+                    className="flex items-start gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-slate-50"
+                  >
+                    <span className="mt-0.5 grid h-7 w-7 place-items-center rounded-md bg-brand-50 text-brand-700">
+                      <Icon className="h-3.5 w-3.5" />
                     </span>
-                    {item.badge && (
-                      <span className="rounded-full bg-brand-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-700">
-                        {item.badge}
+                    <span className="flex-1">
+                      <span className="flex items-center gap-2">
+                        <span className="font-medium text-slate-900">
+                          {item.label}
+                        </span>
+                        {item.badge && (
+                          <span className="rounded-full bg-brand-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-700">
+                            {item.badge}
+                          </span>
+                        )}
                       </span>
-                    )}
-                  </span>
-                  <span className="block text-xs text-slate-500">
-                    {item.description}
-                  </span>
-                </span>
-              </Link>
-            )
-          })}
-        </div>
-      )}
-    </div>
+                      <span className="block text-xs text-slate-500">
+                        {item.description}
+                      </span>
+                    </span>
+                  </Link>
+                )
+              })}
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
   )
 }
