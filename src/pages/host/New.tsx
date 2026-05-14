@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
   Building2,
+  ChevronDown,
   ImagePlus,
   Loader2,
   Sparkles,
@@ -18,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 import { createWebinar } from '@/lib/db'
 import { rememberManageToken, uploadLogo } from '@/lib/host'
 import { getErrorMessage } from '@/lib/errors'
@@ -37,6 +39,7 @@ export function HostNew() {
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [showGuestCount, setShowGuestCount] = useState(true)
   const [allowSpeakRequests, setAllowSpeakRequests] = useState(false)
+  const [optionalOpen, setOptionalOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -131,24 +134,6 @@ export function HostNew() {
                   autoFocus
                 />
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="description">Description (optional)</Label>
-                <Input
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="A short blurb shown on the join page."
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="scheduledAt">Scheduled for (optional)</Label>
-                <Input
-                  id="scheduledAt"
-                  type="datetime-local"
-                  value={scheduledAt}
-                  onChange={(e) => setScheduledAt(e.target.value)}
-                />
-              </div>
 
               <div className="border-t border-slate-100 pt-4">
                 <p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-500">
@@ -186,99 +171,148 @@ export function HostNew() {
               </div>
 
               <div className="border-t border-slate-100 pt-4">
-                <p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-500">
-                  Branding (optional)
-                </p>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="companyName" className="flex items-center gap-1.5">
-                      <Building2 className="h-3.5 w-3.5" />
-                      Company name
-                    </Label>
-                    <Input
-                      id="companyName"
-                      value={companyName}
-                      onChange={(e) => setCompanyName(e.target.value)}
-                      placeholder="UNI SIM"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Logo</Label>
-                    {logoPreview ? (
-                      <div className="flex items-center gap-3 rounded-lg border border-slate-200 p-2">
-                        <img
-                          src={logoPreview}
-                          alt="logo preview"
-                          className="h-10 w-10 rounded object-contain"
-                        />
-                        <span className="flex-1 truncate text-xs text-slate-500">
-                          {logoFile?.name}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => pickLogo(null)}
-                          className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                          aria-label="Remove logo"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ) : (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => fileInput.current?.click()}
-                      >
-                        <ImagePlus className="h-4 w-4" />
-                        Upload logo
-                      </Button>
+                <button
+                  type="button"
+                  onClick={() => setOptionalOpen((v) => !v)}
+                  aria-expanded={optionalOpen}
+                  aria-controls="optional-details"
+                  className="flex w-full items-center justify-between rounded-md py-1 text-left transition-colors hover:text-slate-900"
+                >
+                  <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                    Optional details
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      'h-4 w-4 text-slate-400 transition-transform',
+                      optionalOpen && 'rotate-180',
                     )}
-                    <input
-                      ref={fileInput}
-                      type="file"
-                      accept="image/*"
-                      hidden
-                      onChange={(e) => pickLogo(e.target.files?.[0] ?? null)}
-                    />
-                    <p className="text-xs text-slate-500">
-                      PNG / JPG / SVG, under 1 MB.
-                    </p>
-                  </div>
-                </div>
-              </div>
+                  />
+                </button>
+                {optionalOpen && (
+                  <div id="optional-details" className="mt-4 space-y-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="description">Description</Label>
+                      <Input
+                        id="description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="A short blurb shown on the join page."
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="scheduledAt">Scheduled for</Label>
+                      <Input
+                        id="scheduledAt"
+                        type="datetime-local"
+                        value={scheduledAt}
+                        onChange={(e) => setScheduledAt(e.target.value)}
+                      />
+                    </div>
 
-              <fieldset className="rounded-lg border border-slate-200 p-3">
-                <legend className="px-1 text-xs font-medium text-slate-500">
-                  Default settings (you can change later)
-                </legend>
-                <label className="flex items-start gap-3 py-1.5">
-                  <input
-                    type="checkbox"
-                    checked={showGuestCount}
-                    onChange={(e) => setShowGuestCount(e.target.checked)}
-                    className="mt-1 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
-                  />
-                  <span className="text-sm">
-                    <span className="font-medium text-slate-900">
-                      Show attendee count to guests
-                    </span>
-                  </span>
-                </label>
-                <label className="flex items-start gap-3 py-1.5">
-                  <input
-                    type="checkbox"
-                    checked={allowSpeakRequests}
-                    onChange={(e) => setAllowSpeakRequests(e.target.checked)}
-                    className="mt-1 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
-                  />
-                  <span className="text-sm">
-                    <span className="font-medium text-slate-900">
-                      Allow guests to request to speak
-                    </span>
-                  </span>
-                </label>
-              </fieldset>
+                    <div className="pt-2">
+                      <p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-500">
+                        Branding
+                      </p>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="space-y-1.5">
+                          <Label
+                            htmlFor="companyName"
+                            className="flex items-center gap-1.5"
+                          >
+                            <Building2 className="h-3.5 w-3.5" />
+                            Company name
+                          </Label>
+                          <Input
+                            id="companyName"
+                            value={companyName}
+                            onChange={(e) => setCompanyName(e.target.value)}
+                            placeholder="UNI SIM"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label>Logo</Label>
+                          {logoPreview ? (
+                            <div className="flex items-center gap-3 rounded-lg border border-slate-200 p-2">
+                              <img
+                                src={logoPreview}
+                                alt="logo preview"
+                                className="h-10 w-10 rounded object-contain"
+                              />
+                              <span className="flex-1 truncate text-xs text-slate-500">
+                                {logoFile?.name}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => pickLogo(null)}
+                                className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                                aria-label="Remove logo"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </div>
+                          ) : (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="w-full"
+                              onClick={() => fileInput.current?.click()}
+                            >
+                              <ImagePlus className="h-4 w-4" />
+                              Upload logo
+                            </Button>
+                          )}
+                          <input
+                            ref={fileInput}
+                            type="file"
+                            accept="image/*"
+                            hidden
+                            onChange={(e) =>
+                              pickLogo(e.target.files?.[0] ?? null)
+                            }
+                          />
+                          <p className="text-xs text-slate-500">
+                            PNG / JPG / SVG, under 1 MB.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <fieldset className="rounded-lg border border-slate-200 p-3">
+                      <legend className="px-1 text-xs font-medium text-slate-500">
+                        Default settings (you can change later)
+                      </legend>
+                      <label className="flex items-start gap-3 py-1.5">
+                        <input
+                          type="checkbox"
+                          checked={showGuestCount}
+                          onChange={(e) => setShowGuestCount(e.target.checked)}
+                          className="mt-1 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                        />
+                        <span className="text-sm">
+                          <span className="font-medium text-slate-900">
+                            Show attendee count to guests
+                          </span>
+                        </span>
+                      </label>
+                      <label className="flex items-start gap-3 py-1.5">
+                        <input
+                          type="checkbox"
+                          checked={allowSpeakRequests}
+                          onChange={(e) =>
+                            setAllowSpeakRequests(e.target.checked)
+                          }
+                          className="mt-1 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                        />
+                        <span className="text-sm">
+                          <span className="font-medium text-slate-900">
+                            Allow guests to request to speak
+                          </span>
+                        </span>
+                      </label>
+                    </fieldset>
+                  </div>
+                )}
+              </div>
 
               {error && (
                 <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
