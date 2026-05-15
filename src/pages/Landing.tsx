@@ -8,7 +8,7 @@ import {
   Video,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { WebinarPreview } from '@/components/WebinarPreview'
+import { HostNewForm } from '@/components/HostNewForm'
 
 export function Landing() {
   return (
@@ -21,14 +21,9 @@ export function Landing() {
         </div>
 
         <div className="container py-16 sm:py-20 lg:py-24">
-          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-            {/* Left column — animated preview */}
-            <div className="order-2 lg:order-1">
-              <WebinarPreview />
-            </div>
-
-            {/* Right column — copy, CTAs, OSS pill */}
-            <div className="order-1 text-center lg:order-2 lg:text-left">
+          <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-16">
+            {/* Left column — copy, demo CTA, OSS pill */}
+            <div className="text-center lg:text-left lg:pt-8">
               <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/80 px-3 py-1 text-xs font-medium text-brand-700 shadow-soft backdrop-blur">
                 <Sparkles className="h-3.5 w-3.5" />
                 Live, warm, in your pocket
@@ -45,19 +40,13 @@ export function Landing() {
                 time, and invite anyone up on stage with a single tap — no
                 installs, no friction.
               </p>
-              <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
-                <Button asChild size="lg">
-                  <Link to="/host/new">
-                    Host a webinar <ArrowRight className="h-4 w-4" />
+              <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
+                <Button asChild variant="outline" size="lg">
+                  <Link to="/w/demo">
+                    Join the demo room <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg">
-                  <Link to="/w/demo">Join the demo room</Link>
-                </Button>
               </div>
-              <p className="mt-4 text-xs text-slate-500">
-                No signup required — verify your email when you go live.
-              </p>
               <a
                 href="https://github.com/universal-simulation-ltd/Universal_Webinar"
                 target="_blank"
@@ -68,6 +57,20 @@ export function Landing() {
                 Open source — self-host free or PRO hosted by UNI SIM
                 <ArrowRight className="h-3 w-3 opacity-60" />
               </a>
+            </div>
+
+            {/* Right column — host-new form to jump straight in */}
+            <div>
+              <div className="mb-4 text-center lg:text-left">
+                <span className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Free · no signup yet · OTP at go-live
+                </span>
+                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+                  Set up your webinar
+                </h2>
+              </div>
+              <HostNewForm />
             </div>
           </div>
         </div>
