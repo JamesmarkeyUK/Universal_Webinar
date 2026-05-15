@@ -41,7 +41,7 @@ function SupabaseNotConfigured() {
           environment, then reload. See{' '}
           <a
             className="underline decoration-amber-700/40 underline-offset-2 hover:decoration-amber-700"
-            href="https://github.com/JamesmarkeyUK/Universal_Webinar/blob/main/SUPABASE.md"
+            href="https://github.com/universal-simulation-ltd/Universal_Webinar/blob/main/SUPABASE.md"
             target="_blank"
             rel="noreferrer"
           >

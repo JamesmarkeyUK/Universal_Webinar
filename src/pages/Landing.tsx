@@ -59,7 +59,7 @@ export function Landing() {
                 No signup required — verify your email when you go live.
               </p>
               <a
-                href="https://github.com/JamesmarkeyUK/Universal_Webinar"
+                href="https://github.com/universal-simulation-ltd/Universal_Webinar"
                 target="_blank"
                 rel="noreferrer"
                 className="mt-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-medium text-slate-700 shadow-soft transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
