@@ -3,6 +3,29 @@ import { LogOut } from 'lucide-react'
 import { CompanyMenu } from './CompanyMenu'
 import { HeaderBrandMark } from './HeaderBrandMark'
 import { Logo } from './Logo'
+import { VersionChip } from './VersionChip'
+import unisimIcon from '@/assets/unisim-icon.png'
+
+function UnisimMark() {
+  return (
+    <a
+      href="https://www.unisim.co.uk"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Built by UNI SIM"
+      title="Built by UNI SIM"
+      className="ml-2 inline-flex items-center group"
+    >
+      <img
+        src={unisimIcon}
+        alt=""
+        aria-hidden
+        className="h-7 w-auto opacity-30 group-hover:opacity-90 transition-opacity select-none"
+        draggable={false}
+      />
+    </a>
+  )
+}
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 
@@ -63,6 +86,7 @@ export function AdminLayout() {
             </nav>
           </div>
           <div className="relative flex items-center gap-2 text-sm">
+            <VersionChip />
             <HeaderBrandMark variant="compact" />
             {user?.email && (
               <span className="relative z-10 hidden sm:inline truncate max-w-[200px] text-slate-500">
@@ -78,6 +102,7 @@ export function AdminLayout() {
               <LogOut className="h-4 w-4" />
               <span className="sr-only sm:not-sr-only">Sign out</span>
             </button>
+            <UnisimMark />
           </div>
         </div>
       </header>
@@ -96,6 +121,7 @@ function TopBar() {
           <Logo />
         </Link>
         <nav className="relative flex items-center gap-1 text-sm">
+          <VersionChip />
           <HeaderBrandMark variant="compact" />
           <span className="relative z-10">
             <CompanyMenu />
@@ -106,6 +132,7 @@ function TopBar() {
           >
             Admin
           </Link>
+          <UnisimMark />
         </nav>
       </div>
     </header>
