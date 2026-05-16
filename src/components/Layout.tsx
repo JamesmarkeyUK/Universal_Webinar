@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { LogOut } from 'lucide-react'
+import { UniversalBar } from '@unisim/sdk'
 import { CompanyMenu } from './CompanyMenu'
 import { HeaderBrandMark } from './HeaderBrandMark'
 import { Logo } from './Logo'
@@ -32,6 +33,7 @@ import { useAuth } from '@/lib/auth'
 export function PublicLayout() {
   return (
     <div className="flex min-h-full flex-col bg-slate-50">
+      <UniversalBar />
       <TopBar />
       <main className="flex-1">
         <Outlet />
@@ -57,6 +59,7 @@ export function AdminLayout() {
 
   return (
     <div className="flex min-h-full flex-col bg-slate-50">
+      <UniversalBar />
       <header className="relative overflow-hidden border-b border-slate-200 bg-white">
         <div className="container flex h-16 items-center justify-between">
           <div className="relative z-10 flex items-center gap-8">
